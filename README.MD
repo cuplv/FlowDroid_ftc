@@ -1,3 +1,22 @@
+# Modifications
+This is a fork of flowdroid 2.10 to add dex output.  To run, build the branch `output-dex` as normal and run with the following arguments.
+
+```
+-a
+target.apk
+-p
+...Android/sdk/platforms
+-s
+.../FlowDroid/soot-infoflow-android/SourcesAndSinks.txt
+-d
+-o
+.../out
+-wj
+.../outjimple
+```
+
+The apk will be written to the directory of the input apk in a sub folder named `outDex`.
+
 # FlowDroid Data Flow Analysis Tool
 
 This repository hosts the FlowDroid data flow analysis tool. FlowDroid statically computes data flows in Android apps and Java programs.

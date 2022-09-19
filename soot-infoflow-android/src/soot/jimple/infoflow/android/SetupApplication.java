@@ -1150,9 +1150,16 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		Options.v().set_no_bodies_for_excluded(true);
 		Options.v().set_allow_phantom_refs(true);
-		if (config.getWriteOutputFiles())
-			Options.v().set_output_format(Options.output_format_jimple);
-		else
+		if (config.getWriteOutputFiles()){
+			String[] spl = apkFileLocation.split("/");
+			String workingDir = "/";
+			for(String d : spl){
+				workingDir = workingDir + "/" + d;
+			}
+			//Options.v().set_output_format(Options.output_format_jimple);
+			Options.v().set_output_format(Options.output_format_dex);
+			Options.v().set_output_dir(workingDir + "/" + "outDex");
+		} else
 			Options.v().set_output_format(Options.output_format_none);
 		Options.v().set_whole_program(true);
 		Options.v().set_process_dir(Collections.singletonList(apkFileLocation));
