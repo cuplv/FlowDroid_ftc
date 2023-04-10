@@ -82,7 +82,9 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
+import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.options.Options;
+import soot.util.Chain;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -1153,7 +1155,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		if (config.getWriteOutputFiles())
 			Options.v().set_output_format(Options.output_format_jimple);
 		else
-			Options.v().set_output_format(Options.output_format_none);
+
+        	Options.v().set_output_format(Options.output_format_none);
 		Options.v().set_whole_program(true);
 		Options.v().set_process_dir(Collections.singletonList(apkFileLocation));
 		if (forceAndroidJar)
@@ -1467,6 +1470,24 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			processEntryPoint(sourcesAndSinks, resultAggregator, -1, null);
 
 		// Write the results to disk if requested
+		Chain<SootClass> classes = Scene.v().getClasses();
+		CallGraph callGraph = Scene.v().getCallGraph();
+		int cgMethodCount = 0;
+		int totMethodCount = 0;
+		for(SootClass c : classes) {
+			List<SootMethod> methods = c.getMethods();
+			for(SootMethod m : methods){
+				totMethodCount += 1;
+				if(m.isPhantom()) {
+
+					System.out.println("is phantom: " + m);
+				}
+				if(!m.isPhantom() && m.getDeclaringClass().toString().contains("de.markusfisch.android.wavelines") && callGraph.edgesInto(m).hasNext())
+					cgMethodCount = cgMethodCount + 1;
+			}
+		}
+		System.out.println("found methods in cg: " + cgMethodCount);
+		System.out.println("found total methods: " + totMethodCount);
 		serializeResults(resultAggregator.getAggregatedResults(), resultAggregator.getLastICFG());
 
 		// We return the aggregated results
